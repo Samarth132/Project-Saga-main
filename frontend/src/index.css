@@ -1,0 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=MedievalSharp&display=swap');
+
+/* Styles are now handled by Material-UI's CssBaseline and custom themes. */
+
+body {
+  font-family: 'Lora', serif;
+}
