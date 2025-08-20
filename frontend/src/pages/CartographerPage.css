@@ -1,0 +1,6 @@
+.leaflet-map-container {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto; /* Ensure aspect ratio is not forced */
+  overflow: hidden;
+}

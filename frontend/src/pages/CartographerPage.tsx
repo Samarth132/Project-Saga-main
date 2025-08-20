@@ -8,6 +8,7 @@ import useProjectStore from '../store/projectStore';
 import useEntityStore from '../store/entityStore';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Autocomplete } from '@mui/material';
+import './CartographerPage.css'; // Import the new CSS file
 
 // Set a default icon for the markers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -21,15 +22,11 @@ const MapInitializer: React.FC<{ bounds: LatLngBoundsExpression | undefined, ima
   const map = useMap();
 
   useEffect(() => {
-    if (bounds && imageDimensions) {
-      // Calculate a zoom level that fits the image within the 800x600 container
-      // Assuming 800x600 is the target container size
-      const scaleX = 800 / imageDimensions.width;
-      const scaleY = 600 / imageDimensions.height;
-      const initialZoom = Math.log2(Math.min(scaleX, scaleY)); // Calculate zoom based on fitting
-      map.setView([imageDimensions.height / 2, imageDimensions.width / 2], initialZoom);
+    if (bounds) {
+      map.fitBounds(bounds);
+      map.invalidateSize(); // Added invalidateSize
     }
-  }, [map, bounds, imageDimensions]);
+  }, [map, bounds]);
 
   return null;
 };
@@ -160,17 +157,16 @@ const CartographerPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      <Box sx={{ height: '600px', width: '800px' }}> {/* Explicit height/width for debugging */}
+      <Box sx={{ flexGrow: 1, minHeight: '500px' }}> {/* Reverted to flexGrow and minHeight */}
         <MapContainer
           key={selectedMap?._id} // Re-render map when map changes
           center={imageDimensions ? [imageDimensions.height / 2, imageDimensions.width / 2] : [51.505, -0.09]}
           zoom={imageDimensions ? 0 : 13}
           style={{ height: '100%', width: '100%' }}
           crs={imageDimensions ? L.CRS.Simple : L.CRS.EPSG3857}
-          maxBounds={bounds} // Added maxBounds
-          maxBoundsViscosity={1.0} // Added maxBoundsViscosity to keep map within bounds
-          minZoom={0} // Added minZoom
-          maxZoom={1} // Added maxZoom
+          zoomSnap={0} // Added zoomSnap
+          zoomDelta={0} // Added zoomDelta
+          className="leaflet-map-container" // Added class name
         >
           {selectedMap && bounds ? (
             <>
@@ -184,7 +180,6 @@ const CartographerPage: React.FC = () => {
             />
           )}
           <AddPinOnClick onPinAdd={addPin} />
-          {console.log('Current pins array:', pins)} {/* Added log */}
           {pins.map((pin) => {
             console.log('Rendering pin:', pin); // Added log
             const linkedEntity = pin.entityId ? entities.find(e => e._id === pin.entityId) : null;
@@ -192,9 +187,14 @@ const CartographerPage: React.FC = () => {
               <Marker key={pin._id} position={pin.position}>
                 <Popup>
                   <Box sx={{ minWidth: 200 }}>
-                    <Typography variant="subtitle1">
-                      {linkedEntity ? linkedEntity.name : 'Unlinked Pin'}
-                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}> {/* Changed alignItems to flex-end */}
+                      <Typography variant="subtitle1">
+                        {linkedEntity ? linkedEntity.name : 'Unlinked Pin'}
+                      </Typography>
+                      <IconButton size="small" onClick={() => deletePin(pin._id)} color="error">
+                        <DeleteIcon fontSize="inherit" />
+                      </IconButton>
+                    </Box>
                     <Autocomplete
                       size="small"
                       options={entities}
@@ -208,9 +208,6 @@ const CartographerPage: React.FC = () => {
                       renderInput={(params) => <TextField {...params} label="Link to Entity" variant="standard" />}
                       sx={{ mt: 2 }}
                     />
-                    <IconButton size="small" onClick={() => deletePin(pin._id)}> {/* Removed sx for positioning */}
-                      Delete Pin {/* Changed to text for visibility */}
-                    </IconButton>
                   </Box>
                 </Popup>
               </Marker>
