@@ -185,7 +185,7 @@ const WorldForgePage = () => {
           <Grid
             size={{
               xs: 12,
-              md: 8
+              md: 6
             }}>
             {loading && <CircularProgress />}
             {error && <Alert severity="error">{error}</Alert>}
@@ -200,7 +200,7 @@ const WorldForgePage = () => {
                 </Box>
                 {entityTypes.map((type, index) => (
                   <TabPanel value={currentTab} index={index} key={type}>
-                    <TableContainer component={Paper}>
+                    <TableContainer component={Paper} sx={{ height: '60vh', overflow: 'auto' }}>
                       <Table stickyHeader aria-label={`${type} table`}>
                         <TableHead>
                           <TableRow>
@@ -235,56 +235,59 @@ const WorldForgePage = () => {
           <Grid
             size={{
               xs: 12,
-              md: 4
+              md: 6
             }}>
-            <Paper sx={{ p: 2, minHeight: '60vh' }}>
-              <Typography variant="h6" gutterBottom>Details</Typography>
+      <Paper sx={{ p: 2, minHeight: '70vh', maxHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
+        <Typography variant="h6" gutterBottom>Details</Typography>
+        <Divider sx={{ mb: 2 }} />
+        <Box sx={{ flex: 1, overflowY: 'auto' }}>
+          {selectedEntity ? (
+            <>
+              <Typography variant="subtitle1" gutterBottom><strong>{selectedEntity.name}</strong> ({selectedEntity.type})</Typography>
+              {/* Show all entity fields except description */}
+              {Object.entries(selectedEntity.data).map(([key, value]) => (
+                key !== 'description' && (
+                  <Box key={key} sx={{ mb: 1 }}>
+                    <Typography variant="body2">{key.charAt(0).toUpperCase() + key.slice(1)}:
+                      <Typography variant="body1" component={'span'} color='textSecondary'> {String(value)}</Typography>
+                    </Typography>
+                  </Box>
+                )
+              ))}
+              {selectedEntity.data.description && (
+                <Box sx={{ my: 2 }}>
+                  <Typography variant="body2" color="textSecondary">Description:</Typography>
+                  <Typography variant="body1" component="div">
+                    <AutoLinkedText text={selectedEntity.data.description} />
+                  </Typography>
+                </Box>
+              )}
+              <Typography variant="h6" gutterBottom sx={{mt: 4}}>Relationships</Typography>
               <Divider sx={{ mb: 2 }} />
-              {selectedEntity ? (
-                <>
-                  <Typography variant="subtitle1" gutterBottom><strong>{selectedEntity.name}</strong> ({selectedEntity.type})</Typography>
-                  {/* Show all entity fields except description */}
-                  {Object.entries(selectedEntity.data).map(([key, value]) => (
-                    key !== 'description' && (
-                      <Box key={key} sx={{ mb: 1 }}>
-                        <Typography variant="body2" color="textSecondary">{key.charAt(0).toUpperCase() + key.slice(1)}:</Typography>
-                        <Typography variant="body1">{String(value)}</Typography>
-                      </Box>
-                    )
-                  ))}
-                  {selectedEntity.data.description && (
-                    <Box sx={{ my: 2 }}>
-                      <Typography variant="body2" color="textSecondary">Description:</Typography>
-                      <Typography variant="body1" component="div">
-                        <AutoLinkedText text={selectedEntity.data.description} />
-                      </Typography>
-                    </Box>
-                  )}
-                  <Typography variant="h6" gutterBottom sx={{mt: 4}}>Relationships</Typography>
-                  <Divider sx={{ mb: 2 }} />
-                  <Button variant="outlined" size="small" sx={{ mb: 2 }} onClick={handleOpenRelForm}>Add Relationship</Button>
-                  {relStore.loading ? <CircularProgress size={24} /> :
-                   relStore.error ? <Alert severity="error" sx={{mt: 2}}>{relStore.error}</Alert> :
-                   <List dense>
-                    {relStore.relationships.map(rel => (
-                      <ListItem key={rel._id} disablePadding>
-                        <ListItemText
-                          primary={`${rel.source.name} → ${rel.target.name}`}
-                          secondary={rel.type}
-                        />
-                        <ListItemSecondaryAction>
-                          <IconButton edge="end" aria-label="delete relationship" onClick={() => handleDeleteRelationship(rel._id)}>
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                    ))}
-                    {relStore.relationships.length === 0 && <Typography variant="body2">No relationships found.</Typography>}
-                  </List>
-                  }
-                </>
-              ) : <Typography variant="body2">Select an entity to view its details and relationships.</Typography>}
-            </Paper>
+              <Button variant="outlined" size="small" sx={{ mb: 2 }} onClick={handleOpenRelForm}>Add Relationship</Button>
+              {relStore.loading ? <CircularProgress size={24} /> :
+               relStore.error ? <Alert severity="error" sx={{mt: 2}}>{relStore.error}</Alert> :
+               <List dense>
+                {relStore.relationships.map(rel => (
+                  <ListItem key={rel._id} disablePadding>
+                    <ListItemText
+                      primary={`${rel.source.name} → ${rel.target.name}`}
+                      secondary={rel.type}
+                    />
+                    <ListItemSecondaryAction>
+                      <IconButton edge="end" aria-label="delete relationship" onClick={() => handleDeleteRelationship(rel._id)}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                ))}
+                {relStore.relationships.length === 0 && <Typography variant="body2">No relationships found.</Typography>}
+              </List>
+              }
+            </>
+          ) : <Typography variant="body2">Select an entity to view its details and relationships.</Typography>}
+        </Box>
+      </Paper>
           </Grid>
         </Grid>
       </Box>
