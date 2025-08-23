@@ -70,9 +70,18 @@ const WorldForgePage = () => {
   const [editingEntity, setEditingEntity] = useState<Entity | null>(null);
   const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
   const [currentTab, setCurrentTab] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredEntities = useMemo(() => {
+    if (!searchTerm.trim()) return entities;
+    return entities.filter(entity =>
+      entity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      entity.type.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [entities, searchTerm]);
 
   const groupedEntities = useMemo(() => {
-    return entities.reduce((acc, entity) => {
+    return filteredEntities.reduce((acc, entity) => {
       const { type } = entity;
       if (!acc[type]) {
         acc[type] = [];
@@ -80,7 +89,7 @@ const WorldForgePage = () => {
       acc[type].push(entity);
       return acc;
     }, {} as Record<string, Entity[]>);
-  }, [entities]);
+  }, [filteredEntities]);
 
   const entityTypes = useMemo(() => Object.keys(groupedEntities), [groupedEntities]);
 
@@ -160,9 +169,18 @@ const WorldForgePage = () => {
         <Typography variant="h4" component="h1" gutterBottom>
           The World Forge
         </Typography>
-        <Button variant="contained" color="primary" sx={{ mb: 2 }} onClick={handleOpenCreateForm}>
-          Create New Entity
-        </Button>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
+          <Button variant="contained" color="primary" onClick={handleOpenCreateForm}>
+            Create New Entity
+          </Button>
+          <input
+            type="text"
+            placeholder="Search entities..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ padding: '8px', borderRadius: '4px', border: '1px solid #888', background: '#222', color: '#fff', minWidth: '220px' }}
+          />
+        </Box>
         <Grid container spacing={4}>
           <Grid
             size={{
@@ -225,9 +243,19 @@ const WorldForgePage = () => {
               {selectedEntity ? (
                 <>
                   <Typography variant="subtitle1" gutterBottom><strong>{selectedEntity.name}</strong> ({selectedEntity.type})</Typography>
+                  {/* Show all entity fields except description */}
+                  {Object.entries(selectedEntity.data).map(([key, value]) => (
+                    key !== 'description' && (
+                      <Box key={key} sx={{ mb: 1 }}>
+                        <Typography variant="body2" color="textSecondary">{key.charAt(0).toUpperCase() + key.slice(1)}:</Typography>
+                        <Typography variant="body1">{String(value)}</Typography>
+                      </Box>
+                    )
+                  ))}
                   {selectedEntity.data.description && (
                     <Box sx={{ my: 2 }}>
-                      <Typography variant="body2" component="div">
+                      <Typography variant="body2" color="textSecondary">Description:</Typography>
+                      <Typography variant="body1" component="div">
                         <AutoLinkedText text={selectedEntity.data.description} />
                       </Typography>
                     </Box>
@@ -255,7 +283,7 @@ const WorldForgePage = () => {
                   </List>
                   }
                 </>
-              ) : <Typography variant="body2">Select an entity to view its relationships.</Typography>}
+              ) : <Typography variant="body2">Select an entity to view its details and relationships.</Typography>}
             </Paper>
           </Grid>
         </Grid>
