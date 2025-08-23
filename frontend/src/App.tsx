@@ -3,6 +3,7 @@ import useThemeStore from './store/themeStore';
 import useSnackbarStore from './store/snackbarStore';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import { Routes, Route, Link as RouterLink, Navigate } from 'react-router-dom';
 import WorldForgePage from './pages/WorldForgePage';
 import TemplatesPage from './pages/TemplatesPage';
@@ -31,7 +32,10 @@ function App() {
         <Toolbar variant='dense'>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <RouterLink to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-              Project Saga
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <span>Project Saga</span>
+                <HistoryEduIcon sx={{ ml: 1, fontSize: 28 }} />
+              </Box>
             </RouterLink>
           </Typography>
           {selectedProject && (

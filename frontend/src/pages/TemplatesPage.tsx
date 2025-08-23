@@ -71,7 +71,7 @@ const TemplatesPage = () => {
         {loading && <CircularProgress />}
         {error && <Alert severity="error">{error}</Alert>}
         {!loading && !error && (
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} sx={{ height: '75vh', overflow: 'auto' }}>
             <Table sx={{ minWidth: 650 }} aria-label="templates table">
               <TableHead>
                 <TableRow>

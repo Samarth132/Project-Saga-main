@@ -5,7 +5,7 @@ const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#8b4513', // SaddleBrown
+      main: '#7b4f30ff', // SaddleBrown
     },
     secondary: {
       main: '#800000', // Maroon
@@ -14,8 +14,8 @@ const lightTheme = createTheme({
       main: '#d32f2f', // A standard red for errors
     },
     background: {
-      default: '#fdf6e3', // Parchment-like cream
-      paper: '#eee8d5', // Slightly darker shade for paper elements
+      default: '#d0c9b7ff', // Parchment-like cream
+      paper: '#c4bda9ff', // Slightly darker shade for paper elements
     },
     text: {
       primary: '#2c1e12', // Very dark brown
