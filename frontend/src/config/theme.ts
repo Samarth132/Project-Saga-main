@@ -72,7 +72,7 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#a07e5f', // Lighter, desaturated brown
+      main: '#b79677ff', // Lighter, desaturated brown
     },
     secondary: {
       main: '#b25b5b', // Desaturated red

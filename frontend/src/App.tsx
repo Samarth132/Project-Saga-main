@@ -27,8 +27,8 @@ function App() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppBar position="static">
-        <Toolbar>
+  <AppBar position="sticky" sx={{ top: 0, zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <Toolbar variant='dense'>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <RouterLink to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
               Project Saga
@@ -37,8 +37,6 @@ function App() {
           {selectedProject && (
             <>
               <Button color="inherit" component={RouterLink} to="/world-forge">World Forge</Button>
-              {/* <Button color="inherit" component={RouterLink} to="/story-weaver">Story Weaver</Button> */}
-              {/* <Button color="inherit" component={RouterLink} to="/graph">Graph View</Button> */}
               <Button color="inherit" component={RouterLink} to="/templates">Templates</Button>
               <Button color="inherit" component={RouterLink} to="/cartographer">Cartographer</Button>
               <Button color="inherit" onClick={handleLogout}>Change Project</Button>
