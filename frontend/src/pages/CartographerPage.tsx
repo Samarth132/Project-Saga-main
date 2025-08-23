@@ -8,7 +8,6 @@ import useProjectStore from '../store/projectStore';
 import useEntityStore from '../store/entityStore';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Autocomplete } from '@mui/material';
-import './CartographerPage.css'; // Import the new CSS file
 
 // Set a default icon for the markers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -58,24 +57,38 @@ const CartographerPage: React.FC = () => {
   }, [selectedProject, fetchMaps, fetchEntities]);
 
   useEffect(() => {
-    if (selectedMap) {
-      const img = new Image();
-      const imageUrl = `http://localhost:5001/${selectedMap.imageUrl}`;
-      console.log('Attempting to load map image from:', imageUrl); // Added log
+    const loadMapData = async () => {
+      if (selectedMap) {
+        setImageDimensions(null); // Reset dimensions to show loading state
+        const imageUrl = `http://localhost:5001/${selectedMap.imageUrl}`;
+        console.log('Attempting to load map image from:', imageUrl);
 
-      img.onload = () => {
-        setImageDimensions({ width: img.width, height: img.height });
-        console.log('Map image loaded successfully. Dimensions:', img.width, img.height); // Added log
-      };
-      img.onerror = (error) => { // Added error handler
-        console.error('Error loading map image:', imageUrl, error);
-        setImageDimensions(null); // Ensure imageDimensions is null on error
-      };
-      img.src = imageUrl; // Set src after onload/onerror
-      fetchPins(selectedMap._id);
-    } else {
-      setImageDimensions(null);
-    }
+        try {
+          const img = new Image();
+          img.src = imageUrl;
+          await new Promise<void>((resolve, reject) => {
+            img.onload = () => {
+              console.log('Map image loaded successfully. Dimensions:', img.naturalWidth, img.naturalHeight);
+              setImageDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+              resolve();
+            };
+            img.onerror = (error) => {
+              console.error('Error loading map image:', imageUrl, error);
+              reject(error);
+            };
+          });
+          
+          await fetchPins(selectedMap._id);
+
+        } catch (error) {
+          setImageDimensions(null); // Ensure dimensions are null on error
+        }
+      } else {
+        setImageDimensions(null);
+      }
+    };
+
+    loadMapData();
   }, [selectedMap, fetchPins]);
 
   const handleOpen = () => setOpen(true);
@@ -103,8 +116,8 @@ const CartographerPage: React.FC = () => {
   };
 
   const bounds: LatLngBoundsExpression | undefined = imageDimensions && selectedMap
-    ? L.latLngBounds([0, 0], [imageDimensions.height, imageDimensions.width])
-    : undefined;
+  ? [[0, 0], [imageDimensions.height, imageDimensions.width]]
+  : undefined;
 
   return (
     <Container maxWidth="xl" sx={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
@@ -157,18 +170,17 @@ const CartographerPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      <Box sx={{ flexGrow: 1, minHeight: '500px' }}> {/* Reverted to flexGrow and minHeight */}
+      <Box sx={{ flexGrow: 1, minHeight: '500px' }}>
         <MapContainer
-          key={selectedMap?._id} // Re-render map when map changes
-          center={imageDimensions ? [imageDimensions.height / 2, imageDimensions.width / 2] : [51.505, -0.09]}
-          zoom={imageDimensions ? 0 : 13}
+          key={selectedMap?._id}
           style={{ height: '100%', width: '100%' }}
-          crs={imageDimensions ? L.CRS.Simple : L.CRS.EPSG3857}
-          zoomSnap={0} // Added zoomSnap
-          zoomDelta={0} // Added zoomDelta
-          className="leaflet-map-container" // Added class name
+          crs={L.CRS.Simple}
+          minZoom={-5}
+          maxBounds={bounds}
+          maxBoundsViscosity={1.0}
+          className="leaflet-map-container"
         >
-          {selectedMap && bounds ? (
+          {selectedMap && bounds && imageDimensions ? (
             <>
               <ImageOverlay url={`http://localhost:5001/${selectedMap.imageUrl}`} bounds={bounds} />
               <MapInitializer bounds={bounds} imageDimensions={imageDimensions} /> {/* Pass imageDimensions */}
@@ -187,7 +199,7 @@ const CartographerPage: React.FC = () => {
               <Marker key={pin._id} position={pin.position}>
                 <Popup>
                   <Box sx={{ minWidth: 200 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}> {/* Changed alignItems to flex-end */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}> {/* Changed alignItems to center */}
                       <Typography variant="subtitle1">
                         {linkedEntity ? linkedEntity.name : 'Unlinked Pin'}
                       </Typography>
