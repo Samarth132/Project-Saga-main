@@ -245,16 +245,20 @@ const WorldForgePage = () => {
             <>
               <Typography variant="subtitle1" gutterBottom><strong>{selectedEntity.name}</strong> ({selectedEntity.type})</Typography>
               {/* Show all entity fields except description */}
-              {Object.entries(selectedEntity.data).map(([key, value]) => (
-                key !== 'description' && (
-                  <Box key={key} sx={{ mb: 1 }}>
-                    <Typography variant="body2">{key.charAt(0).toUpperCase() + key.slice(1)}:
-                      <Typography variant="body1" component={'span'} color='textSecondary'> {String(value)}</Typography>
-                    </Typography>
-                  </Box>
-                )
-              ))}
-              {selectedEntity.data.description && (
+              {selectedEntity.data && typeof selectedEntity.data === 'object' ? (
+                Object.entries(selectedEntity.data).map(([key, value]) => (
+                  key !== 'description' && (
+                    <Box key={key} sx={{ mb: 1 }}>
+                      <Typography variant="body2">{key.charAt(0).toUpperCase() + key.slice(1)}:
+                        <Typography variant="body1" component={'span'} color='textSecondary'> {String(value)}</Typography>
+                      </Typography>
+                    </Box>
+                  )
+                ))
+              ) : (
+                <Typography variant="body2" color="textSecondary">No details available.</Typography>
+              )}
+              {selectedEntity.data?.description && (
                 <Box sx={{ my: 2 }}>
                   <Typography variant="body2" color="textSecondary">Description:</Typography>
                   <Typography variant="body1" component="div">

@@ -61,9 +61,9 @@ const EntityForm = ({ open, onClose, onSubmit, entity }: EntityFormProps) => {
 
   const renderTemplateFields = () => {
     const template = getSelectedTemplate();
-    if (!template) {
-      // This part can be enhanced to be the key-value editor as a fallback
-      return <Typography>Select a template to see its fields, or implement a custom key-value editor here.</Typography>;
+    if (!template || !Array.isArray(template.fields)) {
+      // Fallback: show a message or a custom key-value editor for entities without a template or fields
+      return <Typography>Select a template to see its fields, or fill in custom fields later.</Typography>;
     }
 
     return template.fields.map(field => (
@@ -71,12 +71,12 @@ const EntityForm = ({ open, onClose, onSubmit, entity }: EntityFormProps) => {
         key={field.name}
         margin="dense"
         label={field.name}
-        type={field.type === 'text' ? 'string' : field.type} // HTML input types
+        type={field.type === 'text' ? 'string' : field.type}
         fullWidth
         multiline={field.type === 'text'}
         rows={field.type === 'text' ? 4 : 1}
         variant="outlined"
-        value={data[field.name] || ''}
+        value={data?.[field.name] || ''}
         onChange={(e) => handleDataChange(field.name, e.target.value)}
         sx={{ mb: 2 }}
       />
