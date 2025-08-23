@@ -6,8 +6,6 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { Routes, Route, Link as RouterLink, Navigate } from 'react-router-dom';
 import WorldForgePage from './pages/WorldForgePage';
 import TemplatesPage from './pages/TemplatesPage';
-import GraphViewPage from './pages/GraphViewPage';
-import StoryWeaverPage from './pages/StoryWeaverPage';
 import ProjectSelectionPage from './pages/ProjectSelectionPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import useProjectStore from './store/projectStore';
@@ -39,8 +37,8 @@ function App() {
           {selectedProject && (
             <>
               <Button color="inherit" component={RouterLink} to="/world-forge">World Forge</Button>
-              <Button color="inherit" component={RouterLink} to="/story-weaver">Story Weaver</Button>
-              <Button color="inherit" component={RouterLink} to="/graph">Graph View</Button>
+              {/* <Button color="inherit" component={RouterLink} to="/story-weaver">Story Weaver</Button> */}
+              {/* <Button color="inherit" component={RouterLink} to="/graph">Graph View</Button> */}
               <Button color="inherit" component={RouterLink} to="/templates">Templates</Button>
               <Button color="inherit" component={RouterLink} to="/cartographer">Cartographer</Button>
               <Button color="inherit" onClick={handleLogout}>Change Project</Button>
@@ -57,8 +55,8 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/world-forge" element={<WorldForgePage />} />
             <Route path="/templates" element={<TemplatesPage />} />
-            <Route path="/graph" element={<GraphViewPage />} />
-            <Route path="/story-weaver" element={<StoryWeaverPage />} />
+            {/* <Route path="/graph" element={<GraphViewPage />} /> */}
+            {/* <Route path="/story-weaver" element={<StoryWeaverPage />} /> */}
             <Route path="/cartographer" element={<CartographerPage />} />
           </Route>
         </Routes>
